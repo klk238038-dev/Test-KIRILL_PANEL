@@ -310,7 +310,6 @@ BossBtn.Activated:Connect(function()
     SetBtn(BossBtn, "👹 Авто-Боссы", AutoBoss)
     
     if AutoBoss then
-        -- Сохраняем позицию
         local Character = Player.Character
         if Character then
             local Root = Character:FindFirstChild("HumanoidRootPart")
@@ -319,19 +318,22 @@ BossBtn.Activated:Connect(function()
             end
         end
     else
-        -- Возвращаемся на место
         if LastPosition then
             local Character = Player.Character
             if Character then
                 local Root = Character:FindFirstChild("HumanoidRootPart")
                 if Root then
                     Root.CFrame = LastPosition
+                    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                    if Humanoid then
+                        Humanoid.WalkSpeed = 16
+                        Humanoid.JumpPower = 50
+                    end
                 end
             end
             LastPosition = nil
         end
         
-        -- Убираем Punch
         pcall(function()
             local Character = Player.Character
             if Character then
@@ -347,7 +349,6 @@ BossBtn.Activated:Connect(function()
     end
 end)
 
--- Функция поиска Punch
 local function GetPunch()
     local Character = Player.Character
     if Character then
@@ -361,7 +362,6 @@ local function GetPunch()
     return nil
 end
 
--- Функция поиска кнопки Claim Reward
 local function ClickClaimReward()
     for _, gui in ipairs(PlayerGui:GetChildren()) do
         if gui:IsA("ScreenGui") then
@@ -391,16 +391,13 @@ spawn(function()
                     local Humanoid = Character:FindFirstChildOfClass("Humanoid")
                     
                     if Root then
-                        -- Телепорт на координаты босса
                         Root.CFrame = CFrame.new(4.670, 28.266, -1328.126)
                         
-                        -- Заморозка (не даём двигаться)
                         if Humanoid then
                             Humanoid.WalkSpeed = 0
                             Humanoid.JumpPower = 0
                         end
                         
-                        -- Берём Punch
                         local Punch = GetPunch()
                         if Punch and Humanoid then
                             if Punch.Parent ~= Character then
@@ -408,7 +405,6 @@ spawn(function()
                                 wait(0.1)
                             end
                             
-                            -- Бьём
                             Punch:Activate()
                             
                             local MuscleEvent = Player:FindFirstChild("muscleEvent")
@@ -419,7 +415,6 @@ spawn(function()
                             end
                         end
                         
-                        -- Пытаемся забрать награду
                         ClickClaimReward()
                     end
                 end
@@ -486,7 +481,6 @@ spawn(function()
                                 if BestRock then
                                     local Root = Character:FindFirstChild("HumanoidRootPart")
                                     if Root then
-                                        -- БЛИЖЕ К КАМНЮ (расстояние 2)
                                         local Distance = 2
                                         local Position = BestRock.Position - BestRock.CFrame.LookVector * Distance
                                         Root.CFrame = CFrame.lookAt(Position, BestRock.Position)
