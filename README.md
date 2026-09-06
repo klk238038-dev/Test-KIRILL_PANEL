@@ -1,1 +1,574 @@
---// KIRILL_PANEL NO KEY V1.5 local Players = game:GetService("Players") local ReplicatedStorage = game:GetService("ReplicatedStorage") local VirtualUser = game:GetService("VirtualUser") local UserInputService = game:GetService("UserInputService") local Player = Players.LocalPlayer local PlayerGui = Player:WaitForChild("PlayerGui") local AutoTrain = false local AutoWeight = false local AutoRebirth = false local AutoKing = false local AntiAFK = false local AutoBoss = false local AutoDurability = false local AutoKingRock = false local BossBackCFrame = nil local BossCharacter = nil local BossRoot = nil local BossOldCollisions = {} local BossOldAutoRotate = nil local BOSS_CFRAME = CFrame.new(4.670, 28.266, -1328.126) * CFrame.Angles(0, math.rad(180), 0) if PlayerGui:FindFirstChild("KIRILL_PANEL_NO_KEY") then PlayerGui.KIRILL_PANEL_NO_KEY:Destroy() end local Gui = Instance.new("ScreenGui") Gui.Name = "KIRILL_PANEL_NO_KEY" Gui.ResetOnSpawn = false Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling Gui.Parent = PlayerGui local Open = Instance.new("TextButton") Open.Size = UDim2.new(0,45,0,45) Open.Position = UDim2.new(1,-65,0,10) Open.BackgroundColor3 = Color3.fromRGB(30,30,30) Open.TextColor3 = Color3.new(1,1,1) Open.Text = "⚡" Open.TextSize = 22 Open.Font = Enum.Font.GothamBlack Open.BorderSizePixel = 0 Open.Parent = Gui Instance.new("UICorner",Open).CornerRadius = UDim.new(1,0) local Panel = Instance.new("Frame") Panel.Size = UDim2.new(0,230,0,280) Panel.Position = UDim2.new(0.5,-115,0.5,-140) Panel.BackgroundColor3 = Color3.fromRGB(25,25,25) Panel.BorderSizePixel = 0 Panel.Visible = false Panel.Parent = Gui Instance.new("UICorner",Panel).CornerRadius = UDim.new(0,10) local TitleBar = Instance.new("Frame") TitleBar.Size = UDim2.new(1,0,0,35) TitleBar.BackgroundColor3 = Color3.fromRGB(35,35,35) TitleBar.BorderSizePixel = 0 TitleBar.Parent = Panel local Title = Instance.new("TextLabel") Title.Size = UDim2.new(1,-40,1,0) Title.Position = UDim2.new(0,10,0,0) Title.BackgroundTransparency = 1 Title.Text = "KIRILL_PANEL NO KEY V1.5" Title.TextColor3 = Color3.new(1,1,1) Title.TextSize = 10 Title.Font = Enum.Font.GothamBlack Title.TextXAlignment = Enum.TextXAlignment.Left Title.Parent = TitleBar local Close = Instance.new("TextButton") Close.Size = UDim2.new(0,25,0,25) Close.Position = UDim2.new(1,-32,0,5) Close.BackgroundColor3 = Color3.fromRGB(170,50,50) Close.Text = "×" Close.TextColor3 = Color3.new(1,1,1) Close.TextSize = 16 Close.Font = Enum.Font.GothamBlack Close.BorderSizePixel = 0 Close.Parent = TitleBar Instance.new("UICorner",Close).CornerRadius = UDim.new(0,5) local Dragging = false local DragStart local StartPos TitleBar.InputBegan:Connect(function(Input) if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then Dragging = true DragStart = Input.Position StartPos = Panel.Position end end) TitleBar.InputEnded:Connect(function(Input) if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then Dragging = false end end) UserInputService.InputChanged:Connect(function(Input) if not Dragging then return end if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then local Delta = Input.Position - DragStart Panel.Position = UDim2.new( StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y ) end end) local Scroll = Instance.new("ScrollingFrame") Scroll.Size = UDim2.new(1,-10,1,-40) Scroll.Position = UDim2.new(0,5,0,40) Scroll.BackgroundTransparency = 1 Scroll.BorderSizePixel = 0 Scroll.CanvasSize = UDim2.new(0,0,0,350) Scroll.ScrollBarThickness = 4 Scroll.ScrollBarImageColor3 = Color3.fromRGB(80,80,80) Scroll.ScrollingDirection = Enum.ScrollingDirection.Y Scroll.Parent = Panel local function CreateButton(Text,Y) local Btn = Instance.new("TextButton") Btn.Size = UDim2.new(1,-10,0,40) Btn.Position = UDim2.new(0,5,0,Y) Btn.BackgroundColor3 = Color3.fromRGB(150,50,50) Btn.TextColor3 = Color3.new(1,1,1) Btn.Text = Text Btn.TextSize = 12 Btn.Font = Enum.Font.GothamBlack Btn.BorderSizePixel = 0 Btn.Parent = Scroll Instance.new("UICorner",Btn).CornerRadius = UDim.new(0,6) return Btn end local TrainBtn = CreateButton("💪 Авто-Прокачка: ВЫКЛ",2) local WeightBtn = CreateButton("🏋️ Авто-Гантеля: ВЫКЛ",46) local RebirthBtn = CreateButton("🔄 Ребитх: ВЫКЛ",90) local KingBtn = CreateButton("👑 Тп-Кинг: ВЫКЛ",134) local AFKBtn = CreateButton("🛡️ Анти-Афк: ВЫКЛ",178) local BossBtn = CreateButton("👹 Авто-Боссы: ВЫКЛ [ТОЛЬКО РАЗМЕР 12]",222) local DurBtn = CreateButton("🥊 Дюрабилити: ВЫКЛ",266) local KingRockBtn = CreateButton("🗿 Кинг-Камень: ВЫКЛ",310) local function SetBtn(Btn,Text,On) if Text == "👹 Авто-Боссы" then Btn.Text = Text .. (On and ": ВКЛ" or ": ВЫКЛ") .. " [ТОЛЬКО РАЗМЕР 12]" else Btn.Text = Text .. (On and ": ВКЛ" or ": ВЫКЛ") end Btn.BackgroundColor3 = On and Color3.fromRGB(50,160,70) or Color3.fromRGB(150,50,50) end Open.Activated:Connect(function() Panel.Visible = true Open.Visible = false end) Close.Activated:Connect(function() Panel.Visible = false Open.Visible = true end) --// АВТО-ПРОКАЧКА TrainBtn.Activated:Connect(function() AutoTrain = not AutoTrain SetBtn(TrainBtn,"💪 Авто-Прокачка",AutoTrain) end) task.spawn(function() while task.wait(0.1) do if AutoTrain then pcall(function() local MuscleEvent = Player:FindFirstChild("muscleEvent") if MuscleEvent then MuscleEvent:FireServer("rep") end end) end end end) --// АВТО-ГАНТЕЛЯ WeightBtn.Activated:Connect(function() AutoWeight = not AutoWeight SetBtn(WeightBtn,"🏋️ Авто-Гантеля",AutoWeight) if not AutoWeight then pcall(function() local Character = Player.Character if Character then local Weight = Character:FindFirstChild("Weight") if Weight then local Backpack = Player:FindFirstChild("Backpack") if Backpack then Weight.Parent = Backpack end end end end) end end) task.spawn(function() while task.wait(0.2) do if AutoWeight then pcall(function() local Character = Player.Character if not Character then return end local Humanoid = Character:FindFirstChildOfClass("Humanoid") local Backpack = Player:FindFirstChild("Backpack") local Weight = Character:FindFirstChild("Weight") if not Weight and Backpack then Weight = Backpack:FindFirstChild("Weight") end if Weight and Humanoid then if Weight.Parent ~= Character then Humanoid:EquipTool(Weight) task.wait(0.2) end Weight:Activate() local MuscleEvent = Player:FindFirstChild("muscleEvent") if MuscleEvent then MuscleEvent:FireServer("rep") end end end) end end end) --// АВТО-РЕБИРТ RebirthBtn.Activated:Connect(function() AutoRebirth = not AutoRebirth SetBtn(RebirthBtn,"🔄 Ребитх",AutoRebirth) end) task.spawn(function() while task.wait(0.05) do if AutoRebirth then pcall(function() local rEvents = ReplicatedStorage:FindFirstChild("rEvents") local Remote = rEvents and rEvents:FindFirstChild("rebirthRemote") if Remote then Remote:InvokeServer("rebirthRequest") end end) end end end) --// ТП-КИНГ KingBtn.Activated:Connect(function() AutoKing = not AutoKing SetBtn(KingBtn,"👑 Тп-Кинг",AutoKing) end) task.spawn(function() while task.wait(0.05) do if AutoKing then pcall(function() local Character = Player.Character local Root = Character and Character:FindFirstChild("HumanoidRootPart") if not Root then return end local MachinesFolder = workspace:FindFirstChild("machinesFolder") if not MachinesFolder then return end for _,Machine in ipairs(MachinesFolder:GetChildren()) do local Rock = Machine:FindFirstChild("Rock") if Rock and Rock:IsA("BasePart") then local MachineName = string.lower(Machine.Name) local RockName = string.lower(Rock.Name) if string.find(MachineName,"king") or string.find(RockName,"king") then local TopY = Rock.Position.Y + Rock.Size.Y / 2 Root.CFrame = CFrame.new( Rock.Position.X, TopY + 5, Rock.Position.Z ) break end end end end) end end end) --// АНТИ-АФК AFKBtn.Activated:Connect(function() AntiAFK = not AntiAFK SetBtn(AFKBtn,"🛡️ Анти-Афк",AntiAFK) end) task.spawn(function() while task.wait(900) do if AntiAFK then pcall(function() VirtualUser:CaptureController() VirtualUser:ClickButton2(Vector2.new(0,0)) end) end end end) --// АВТО-БОССЫ local function GetCharacter() local Character = Player.Character if not Character then return nil,nil,nil end local Root = Character:FindFirstChild("HumanoidRootPart") local Humanoid = Character:FindFirstChildOfClass("Humanoid") return Character,Root,Humanoid end local function EnableBossNoclip(Character) BossOldCollisions = {} for _,Object in ipairs(Character:GetDescendants()) do if Object:IsA("BasePart") then BossOldCollisions[Object] = Object.CanCollide Object.CanCollide = false end end end local function DisableBossNoclip() for Part,OldValue in pairs(BossOldCollisions) do pcall(function() if Part and Part.Parent then Part.CanCollide = OldValue end end) end BossOldCollisions = {} end local function EquipPunch() local Character = Player.Character if not Character then return nil end local Humanoid = Character:FindFirstChildOfClass("Humanoid") local Backpack = Player:FindFirstChild("Backpack") local Punch = Character:FindFirstChild("Punch") if not Punch and Backpack then Punch = Backpack:FindFirstChild("Punch") end if Punch and Humanoid and Punch.Parent ~= Character then pcall(function() Humanoid:EquipTool(Punch) end) task.wait(0.15) end return Punch end local function PunchBoss() pcall(function() local Punch = EquipPunch() if Punch then Punch:Activate() end local MuscleEvent = Player:FindFirstChild("muscleEvent") if MuscleEvent then MuscleEvent:FireServer("punch","leftHand") task.wait(0.05) MuscleEvent:FireServer("punch","rightHand") end end) end local function ClickClaim() pcall(function() local PlayerGui = Player:FindFirstChild("PlayerGui") if not PlayerGui then return end for _,Object in ipairs(PlayerGui:GetDescendants()) do if Object:IsA("TextButton") or Object:IsA("ImageButton") then local Text = "" pcall(function() Text = string.lower(Object.Text or "") end) local Name = string.lower(Object.Name) if Text == "claim" or Text == "claim reward" or string.find(Text,"claim") or string.find(Name,"claim") then if Object.Visible then pcall(function() Object:Activate() end) pcall(function() firesignal(Object.Activated) end) end end end end end) end BossBtn.Activated:Connect(function() --// ВЫКЛЮЧЕНИЕ if AutoBoss then AutoBoss = false SetBtn( BossBtn, "👹 Авто-Боссы", false ) DisableBossNoclip() if BossCharacter and BossCharacter.Parent then local Humanoid = BossCharacter:FindFirstChildOfClass("Humanoid") if Humanoid and BossOldAutoRotate ~= nil then Humanoid.AutoRotate = BossOldAutoRotate end end if BossRoot and BossRoot.Parent and BossBackCFrame then BossRoot.CFrame = BossBackCFrame BossRoot.AssemblyLinearVelocity = Vector3.zero BossRoot.AssemblyAngularVelocity = Vector3.zero end BossCharacter = nil BossRoot = nil BossBackCFrame = nil BossOldAutoRotate = nil return end --// ВКЛЮЧЕНИЕ local Character,Root,Humanoid = GetCharacter() if not Character or not Root then return end BossBackCFrame = Root.CFrame BossCharacter = Character BossRoot = Root if Humanoid then BossOldAutoRotate = Humanoid.AutoRotate Humanoid.AutoRotate = false end AutoBoss = true SetBtn( BossBtn, "👹 Авто-Боссы", true ) EnableBossNoclip(Character) Root.CFrame = BOSS_CFRAME Root.AssemblyLinearVelocity = Vector3.zero Root.AssemblyAngularVelocity = Vector3.zero end) task.spawn(function() while task.wait(0.08) do if AutoBoss then pcall(function() local Character = Player.Character if not Character then return end local Root = Character:FindFirstChild("HumanoidRootPart") if not Root then return end BossCharacter = Character BossRoot = Root -- держим игрока на месте босса Root.CFrame = BOSS_CFRAME Root.AssemblyLinearVelocity = Vector3.zero Root.AssemblyAngularVelocity = Vector3.zero -- noclip for _,Object in ipairs(Character:GetDescendants()) do if Object:IsA("BasePart") then Object.CanCollide = false end end -- удары PunchBoss() -- награда ClickClaim() end) end end end) --// АВТО-ДЮРАБИЛИТИ DurBtn.Activated:Connect(function() AutoDurability = not AutoDurability SetBtn(DurBtn,"🥊 Дюрабилити",AutoDurability) end) task.spawn(function() while task.wait(0.12) do if AutoDurability then pcall(function() local Character = Player.Character if not Character then return end local Humanoid = Character:FindFirstChildOfClass("Humanoid") local Backpack = Player:FindFirstChild("Backpack") local Punch = Character:FindFirstChild("Punch") if not Punch and Backpack then Punch = Backpack:FindFirstChild("Punch") end if Punch and Humanoid then if Punch.Parent ~= Character then Humanoid:EquipTool(Punch) task.wait(0.1) end local Durability = Player:FindFirstChild("Durability") if Durability then local CurrentDurability = tonumber(Durability.Value) or 0 local MachinesFolder = workspace:FindFirstChild("machinesFolder") if MachinesFolder then local BestRock = nil local BestRequired = -1 for _,Machine in ipairs(MachinesFolder:GetChildren()) do local Rock = Machine:FindFirstChild("Rock") if Rock and Rock:IsA("BasePart") then local Needed = Machine:FindFirstChild( "neededDurability" ) local Required = nil if Needed then Required = tonumber(Needed.Value) end if not Required then Needed = Rock:FindFirstChild( "neededDurability" ) if Needed then Required = tonumber(Needed.Value) end end if Required and Required <= CurrentDurability and Required > BestRequired then BestRequired = Required BestRock = Rock end end end if BestRock then local Root = Character:FindFirstChild( "HumanoidRootPart" ) if Root then local Distance = math.max( BestRock.Size.Z / 2 + 2, 4 ) local Position = BestRock.Position - BestRock.CFrame.LookVector * Distance Root.CFrame = CFrame.lookAt( Position, BestRock.Position ) end Punch:Activate() local MuscleEvent = Player:FindFirstChild( "muscleEvent" ) if MuscleEvent then MuscleEvent:FireServer( "punch", "leftHand" ) task.wait(0.06) MuscleEvent:FireServer( "punch", "rightHand" ) end end end end end end) end end end) --// АВТО-КИНГ-КАМЕНЬ KingRockBtn.Activated:Connect(function() AutoKingRock = not AutoKingRock SetBtn( KingRockBtn, "🗿 Кинг-Камень", AutoKingRock ) end) task.spawn(function() while task.wait(0.15) do if AutoKingRock then pcall(function() local Character = Player.Character if not Character then return end local Root = Character:FindFirstChild( "HumanoidRootPart" ) local Humanoid = Character:FindFirstChildOfClass( "Humanoid" ) if Root then Root.CFrame = CFrame.new( -8928.078, 13.199, -6004.433 ) task.wait(0.1) local Backpack = Player:FindFirstChild( "Backpack" ) local Punch = nil if Backpack then Punch = Backpack:FindFirstChild( "Punch" ) end if not Punch then Punch = Character:FindFirstChild( "Punch" ) end if Punch and Humanoid then if Punch.Parent ~= Character then Humanoid:EquipTool( Punch ) task.wait(0.1) end Punch:Activate() local MuscleEvent = Player:FindFirstChild( "muscleEvent" ) if MuscleEvent then MuscleEvent:FireServer( "punch", "leftHand" ) task.wait(0.08) MuscleEvent:FireServer( "punch", "rightHand" ) end end end end) end end end) print("⚡ KIRILL_PANEL NO KEY V1.5 LOADED") print("👹 AUTO BOSSES V1.5 LOADED") 
+--// KIRILL_PANEL NO KEY V1.5
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local AutoTrain = false
+local AutoWeight = false
+local AutoRebirth = false
+local AutoKing = false
+local AntiAFK = false
+local AutoBoss = false
+local AutoDurability = false
+local AutoKingRock = false
+local LastPosition = nil
+
+if PlayerGui:FindFirstChild("KIRILL_PANEL_NO_KEY") then
+    PlayerGui:FindFirstChild("KIRILL_PANEL_NO_KEY"):Destroy()
+end
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "KIRILL_PANEL_NO_KEY"
+Gui.ResetOnSpawn = false
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.Parent = PlayerGui
+
+local Open = Instance.new("TextButton")
+Open.Size = UDim2.new(0,45,0,45)
+Open.Position = UDim2.new(1,-55,0,10)
+Open.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Open.TextColor3 = Color3.new(1,1,1)
+Open.Text = "⚡"
+Open.TextSize = 22
+Open.Font = Enum.Font.GothamBlack
+Open.BorderSizePixel = 0
+Open.Parent = Gui
+Instance.new("UICorner", Open).CornerRadius = UDim.new(1,0)
+
+local Panel = Instance.new("Frame")
+Panel.Size = UDim2.new(0,230,0,280)
+Panel.Position = UDim2.new(0.5,-115,0.5,-140)
+Panel.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Panel.BorderSizePixel = 0
+Panel.Visible = false
+Panel.Parent = Gui
+Instance.new("UICorner", Panel).CornerRadius = UDim.new(0,10)
+
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1,0,0,35)
+TitleBar.BackgroundColor3 = Color3.fromRGB(35,35,35)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = Panel
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,-40,1,0)
+Title.Position = UDim2.new(0,10,0,0)
+Title.BackgroundTransparency = 1
+Title.Text = "KIRILL_PANEL NO KEY V1.5"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.TextSize = 10
+Title.Font = Enum.Font.GothamBlack
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TitleBar
+
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0,25,0,25)
+Close.Position = UDim2.new(1,-32,0,5)
+Close.BackgroundColor3 = Color3.fromRGB(170,50,50)
+Close.Text = "×"
+Close.TextColor3 = Color3.new(1,1,1)
+Close.TextSize = 16
+Close.Font = Enum.Font.GothamBlack
+Close.BorderSizePixel = 0
+Close.Parent = TitleBar
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0,5)
+
+local UserInputService = game:GetService("UserInputService")
+local Dragging = false
+local DragStart = nil
+local StartPos = nil
+
+TitleBar.InputBegan:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = true
+        DragStart = Input.Position
+        StartPos = Panel.Position
+    end
+end)
+
+TitleBar.InputEnded:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+    if not Dragging then return end
+    if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+        local Delta = Input.Position - DragStart
+        Panel.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+    end
+end)
+
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1,-10,1,-40)
+Scroll.Position = UDim2.new(0,5,0,40)
+Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel = 0
+Scroll.CanvasSize = UDim2.new(0,0,0,350)
+Scroll.ScrollBarThickness = 4
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(80,80,80)
+Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+Scroll.Parent = Panel
+
+local function CreateButton(Text, Y)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1,-10,0,40)
+    Btn.Position = UDim2.new(0,5,0,Y)
+    Btn.BackgroundColor3 = Color3.fromRGB(150,50,50)
+    Btn.TextColor3 = Color3.new(1,1,1)
+    Btn.Text = Text
+    Btn.TextSize = 12
+    Btn.Font = Enum.Font.GothamBlack
+    Btn.BorderSizePixel = 0
+    Btn.Parent = Scroll
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,6)
+    return Btn
+end
+
+local TrainBtn = CreateButton("💪 Авто-Прокачка: ВЫКЛ", 2)
+local WeightBtn = CreateButton("🏋️ Авто-Гантеля: ВЫКЛ", 46)
+local RebirthBtn = CreateButton("🔄 Ребитх: ВЫКЛ", 90)
+local KingBtn = CreateButton("👑 Тп-Кинг: ВЫКЛ", 134)
+local AFKBtn = CreateButton("🛡️ Анти-Афк: ВЫКЛ", 178)
+local BossBtn = CreateButton("👹 Авто-Боссы: ВЫКЛ [РАЗМЕР 12]", 222)
+local DurBtn = CreateButton("🥊 Дюрабилити: ВЫКЛ", 266)
+local KingRockBtn = CreateButton("🗿 Кинг-Камень: ВЫКЛ", 310)
+
+local function SetBtn(Btn, Text, On)
+    if On then
+        Btn.Text = Text .. ": ВКЛ [РАЗМЕР 12]"
+        Btn.BackgroundColor3 = Color3.fromRGB(50,160,70)
+    else
+        Btn.Text = Text .. ": ВЫКЛ [РАЗМЕР 12]"
+        Btn.BackgroundColor3 = Color3.fromRGB(150,50,50)
+    end
+end
+
+Open.Activated:Connect(function()
+    Panel.Visible = true
+    Open.Visible = false
+end)
+
+Close.Activated:Connect(function()
+    Panel.Visible = false
+    Open.Visible = true
+end)
+
+--// АВТО-ПРОКАЧКА
+TrainBtn.Activated:Connect(function()
+    AutoTrain = not AutoTrain
+    SetBtn(TrainBtn, "💪 Авто-Прокачка", AutoTrain)
+end)
+
+spawn(function()
+    while wait(0.1) do
+        if AutoTrain then
+            pcall(function()
+                local MuscleEvent = Player:FindFirstChild("muscleEvent")
+                if MuscleEvent then
+                    MuscleEvent:FireServer("rep")
+                end
+            end)
+        end
+    end
+end)
+
+--// АВТО-ГАНТЕЛЯ
+WeightBtn.Activated:Connect(function()
+    AutoWeight = not AutoWeight
+    SetBtn(WeightBtn, "🏋️ Авто-Гантеля", AutoWeight)
+    
+    if not AutoWeight then
+        pcall(function()
+            local Character = Player.Character
+            if Character then
+                local Weight = Character:FindFirstChild("Weight")
+                if Weight then
+                    local Backpack = Player:FindFirstChild("Backpack")
+                    if Backpack then
+                        Weight.Parent = Backpack
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+spawn(function()
+    while wait(0.2) do
+        if AutoWeight then
+            pcall(function()
+                local Character = Player.Character
+                if Character then
+                    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                    local Backpack = Player:FindFirstChild("Backpack")
+                    local Weight = nil
+                    
+                    if Backpack then
+                        Weight = Backpack:FindFirstChild("Weight")
+                    end
+                    if not Weight then
+                        Weight = Character:FindFirstChild("Weight")
+                    end
+                    
+                    if Weight and Humanoid then
+                        if Weight.Parent ~= Character then
+                            Humanoid:EquipTool(Weight)
+                            wait(0.2)
+                        end
+                        Weight:Activate()
+                        local MuscleEvent = Player:FindFirstChild("muscleEvent")
+                        if MuscleEvent then
+                            MuscleEvent:FireServer("rep")
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+--// АВТО-РЕБИТХ
+RebirthBtn.Activated:Connect(function()
+    AutoRebirth = not AutoRebirth
+    SetBtn(RebirthBtn, "🔄 Ребитх", AutoRebirth)
+end)
+
+spawn(function()
+    while wait(0.001) do
+        if AutoRebirth then
+            pcall(function()
+                local rEvents = ReplicatedStorage:FindFirstChild("rEvents")
+                local Remote = rEvents and rEvents:FindFirstChild("rebirthRemote")
+                if Remote then
+                    Remote:InvokeServer("rebirthRequest")
+                end
+            end)
+        end
+    end
+end)
+
+--// АВТО-КИНГ
+KingBtn.Activated:Connect(function()
+    AutoKing = not AutoKing
+    SetBtn(KingBtn, "👑 Тп-Кинг", AutoKing)
+end)
+
+spawn(function()
+    while wait(0.001) do
+        if AutoKing then
+            pcall(function()
+                local Character = Player.Character
+                if Character then
+                    local Root = Character:FindFirstChild("HumanoidRootPart")
+                    if Root then
+                        local MachinesFolder = workspace:FindFirstChild("machinesFolder")
+                        if MachinesFolder then
+                            for _, Machine in ipairs(MachinesFolder:GetChildren()) do
+                                local Rock = Machine:FindFirstChild("Rock")
+                                if Rock and Rock:IsA("BasePart") then
+                                    local MachineName = string.lower(Machine.Name)
+                                    local RockName = string.lower(Rock.Name)
+                                    if string.find(MachineName, "king") or string.find(RockName, "king") then
+                                        local TopY = Rock.Position.Y + Rock.Size.Y / 2
+                                        Root.CFrame = CFrame.new(Rock.Position.X, TopY + 5, Rock.Position.Z)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+--// АНТИ-АФК
+AFKBtn.Activated:Connect(function()
+    AntiAFK = not AntiAFK
+    SetBtn(AFKBtn, "🛡️ Анти-Афк", AntiAFK)
+end)
+
+spawn(function()
+    while wait(900) do
+        if AntiAFK then
+            pcall(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new(0,0))
+            end)
+        end
+    end
+end)
+
+--// АВТО-БОССЫ
+BossBtn.Activated:Connect(function()
+    AutoBoss = not AutoBoss
+    SetBtn(BossBtn, "👹 Авто-Боссы", AutoBoss)
+    
+    if AutoBoss then
+        -- Сохраняем позицию
+        local Character = Player.Character
+        if Character then
+            local Root = Character:FindFirstChild("HumanoidRootPart")
+            if Root then
+                LastPosition = Root.CFrame
+            end
+        end
+    else
+        -- Возвращаемся на место
+        if LastPosition then
+            local Character = Player.Character
+            if Character then
+                local Root = Character:FindFirstChild("HumanoidRootPart")
+                if Root then
+                    Root.CFrame = LastPosition
+                end
+            end
+            LastPosition = nil
+        end
+        
+        -- Убираем Punch
+        pcall(function()
+            local Character = Player.Character
+            if Character then
+                local Punch = Character:FindFirstChild("Punch")
+                if Punch then
+                    local Backpack = Player:FindFirstChild("Backpack")
+                    if Backpack then
+                        Punch.Parent = Backpack
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+-- Функция поиска Punch
+local function GetPunch()
+    local Character = Player.Character
+    if Character then
+        local Punch = Character:FindFirstChild("Punch")
+        if Punch then return Punch end
+    end
+    local Backpack = Player:FindFirstChild("Backpack")
+    if Backpack then
+        return Backpack:FindFirstChild("Punch")
+    end
+    return nil
+end
+
+-- Функция поиска кнопки Claim Reward
+local function ClickClaimReward()
+    for _, gui in ipairs(PlayerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            for _, child in ipairs(gui:GetDescendants()) do
+                if child:IsA("TextButton") and child.Visible then
+                    local t = string.lower(child.Text)
+                    if string.find(t, "claim") or string.find(t, "reward") or string.find(t, "награда") or string.find(t, "забрать") then
+                        pcall(function()
+                            child:Activate()
+                        end)
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+
+spawn(function()
+    while wait(0.15) do
+        if AutoBoss then
+            pcall(function()
+                local Character = Player.Character
+                if Character then
+                    local Root = Character:FindFirstChild("HumanoidRootPart")
+                    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                    
+                    if Root then
+                        -- Телепорт на координаты босса
+                        Root.CFrame = CFrame.new(4.670, 28.266, -1328.126)
+                        
+                        -- Заморозка (не даём двигаться)
+                        if Humanoid then
+                            Humanoid.WalkSpeed = 0
+                            Humanoid.JumpPower = 0
+                        end
+                        
+                        -- Берём Punch
+                        local Punch = GetPunch()
+                        if Punch and Humanoid then
+                            if Punch.Parent ~= Character then
+                                Humanoid:EquipTool(Punch)
+                                wait(0.1)
+                            end
+                            
+                            -- Бьём
+                            Punch:Activate()
+                            
+                            local MuscleEvent = Player:FindFirstChild("muscleEvent")
+                            if MuscleEvent then
+                                MuscleEvent:FireServer("punch", "leftHand")
+                                wait(0.06)
+                                MuscleEvent:FireServer("punch", "rightHand")
+                            end
+                        end
+                        
+                        -- Пытаемся забрать награду
+                        ClickClaimReward()
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+--// АВТО-ДЮРАБИЛИТИ (ближе к камню)
+DurBtn.Activated:Connect(function()
+    AutoDurability = not AutoDurability
+    SetBtn(DurBtn, "🥊 Дюрабилити", AutoDurability)
+end)
+
+spawn(function()
+    while wait(0.12) do
+        if AutoDurability then
+            pcall(function()
+                local Character = Player.Character
+                if Character then
+                    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                    local Backpack = Player:FindFirstChild("Backpack")
+                    local Punch = nil
+                    
+                    if Backpack then
+                        Punch = Backpack:FindFirstChild("Punch")
+                    end
+                    if not Punch then
+                        Punch = Character:FindFirstChild("Punch")
+                    end
+                    
+                    if Punch and Humanoid then
+                        if Punch.Parent ~= Character then
+                            Humanoid:EquipTool(Punch)
+                            wait(0.1)
+                        end
+                        
+                        local Durability = Player:FindFirstChild("Durability")
+                        if Durability then
+                            local CurrentDurability = tonumber(Durability.Value) or 0
+                            local MachinesFolder = workspace:FindFirstChild("machinesFolder")
+                            
+                            if MachinesFolder then
+                                local BestRock = nil
+                                local BestRequired = -1
+                                
+                                for _, Machine in ipairs(MachinesFolder:GetChildren()) do
+                                    local Rock = Machine:FindFirstChild("Rock")
+                                    if Rock and Rock:IsA("BasePart") then
+                                        local Needed = Machine:FindFirstChild("neededDurability")
+                                        local Required = nil
+                                        if Needed then Required = tonumber(Needed.Value) end
+                                        if not Required then
+                                            Needed = Rock:FindFirstChild("neededDurability")
+                                            if Needed then Required = tonumber(Needed.Value) end
+                                        end
+                                        if Required and Required <= CurrentDurability and Required > BestRequired then
+                                            BestRequired = Required
+                                            BestRock = Rock
+                                        end
+                                    end
+                                end
+                                
+                                if BestRock then
+                                    local Root = Character:FindFirstChild("HumanoidRootPart")
+                                    if Root then
+                                        -- БЛИЖЕ К КАМНЮ (расстояние 2)
+                                        local Distance = 2
+                                        local Position = BestRock.Position - BestRock.CFrame.LookVector * Distance
+                                        Root.CFrame = CFrame.lookAt(Position, BestRock.Position)
+                                    end
+                                    
+                                    Punch:Activate()
+                                    
+                                    local MuscleEvent = Player:FindFirstChild("muscleEvent")
+                                    if MuscleEvent then
+                                        MuscleEvent:FireServer("punch", "leftHand")
+                                        wait(0.06)
+                                        MuscleEvent:FireServer("punch", "rightHand")
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+--// АВТО-КИНГ-КАМЕНЬ
+KingRockBtn.Activated:Connect(function()
+    AutoKingRock = not AutoKingRock
+    SetBtn(KingRockBtn, "🗿 Кинг-Камень", AutoKingRock)
+end)
+
+spawn(function()
+    while wait(0.15) do
+        if AutoKingRock then
+            pcall(function()
+                local Character = Player.Character
+                if Character then
+                    local Root = Character:FindFirstChild("HumanoidRootPart")
+                    local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                    
+                    if Root then
+                        Root.CFrame = CFrame.new(-8928.078, 13.199, -6004.433)
+                        wait(0.1)
+                        
+                        local Backpack = Player:FindFirstChild("Backpack")
+                        local Punch = nil
+                        
+                        if Backpack then
+                            Punch = Backpack:FindFirstChild("Punch")
+                        end
+                        if not Punch then
+                            Punch = Character:FindFirstChild("Punch")
+                        end
+                        if not Punch and Backpack then
+                            for _, item in ipairs(Backpack:GetChildren()) do
+                                if item:IsA("Tool") then
+                                    Punch = item
+                                    break
+                                end
+                            end
+                        end
+                        
+                        if Punch and Humanoid then
+                            if Punch.Parent ~= Character then
+                                Humanoid:EquipTool(Punch)
+                                wait(0.1)
+                            end
+                            
+                            Punch:Activate()
+                            
+                            local MuscleEvent = Player:FindFirstChild("muscleEvent")
+                            if MuscleEvent then
+                                MuscleEvent:FireServer("punch", "leftHand")
+                                wait(0.08)
+                                MuscleEvent:FireServer("punch", "rightHand")
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+print("⚡ KIRILL_PANEL NO KEY V1.5 LOADED")
+print("👹 AUTO BOSSES LOADED")
+print("🥊 DURABILITY CLOSE TO ROCK")
