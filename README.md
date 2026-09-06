@@ -157,7 +157,6 @@ Close.Activated:Connect(function()
     Open.Visible = true
 end)
 
---// АВТО-ПРОКАЧКА
 TrainBtn.Activated:Connect(function()
     AutoTrain = not AutoTrain
     SetBtn(TrainBtn, "💪 Авто-Прокачка", AutoTrain)
@@ -176,7 +175,6 @@ spawn(function()
     end
 end)
 
---// АВТО-ГАНТЕЛЯ
 WeightBtn.Activated:Connect(function()
     AutoWeight = not AutoWeight
     SetBtn(WeightBtn, "🏋️ Авто-Гантеля", AutoWeight)
@@ -231,7 +229,6 @@ spawn(function()
     end
 end)
 
---// АВТО-РЕБИТХ
 RebirthBtn.Activated:Connect(function()
     AutoRebirth = not AutoRebirth
     SetBtn(RebirthBtn, "🔄 Ребитх", AutoRebirth)
@@ -251,7 +248,6 @@ spawn(function()
     end
 end)
 
---// АВТО-КИНГ
 KingBtn.Activated:Connect(function()
     AutoKing = not AutoKing
     SetBtn(KingBtn, "👑 Тп-Кинг", AutoKing)
@@ -287,7 +283,6 @@ spawn(function()
     end
 end)
 
---// АНТИ-АФК
 AFKBtn.Activated:Connect(function()
     AntiAFK = not AntiAFK
     SetBtn(AFKBtn, "🛡️ Анти-Афк", AntiAFK)
@@ -304,7 +299,6 @@ spawn(function()
     end
 end)
 
---// АВТО-БОССЫ
 BossBtn.Activated:Connect(function()
     AutoBoss = not AutoBoss
     SetBtn(BossBtn, "👹 Авто-Боссы", AutoBoss)
@@ -423,7 +417,6 @@ spawn(function()
     end
 end)
 
---// АВТО-ДЮРАБИЛИТИ (ближе к камню)
 DurBtn.Activated:Connect(function()
     AutoDurability = not AutoDurability
     SetBtn(DurBtn, "🥊 Дюрабилити", AutoDurability)
@@ -504,7 +497,6 @@ spawn(function()
     end
 end)
 
---// АВТО-КИНГ-КАМЕНЬ
 KingRockBtn.Activated:Connect(function()
     AutoKingRock = not AutoKingRock
     SetBtn(KingRockBtn, "🗿 Кинг-Камень", AutoKingRock)
